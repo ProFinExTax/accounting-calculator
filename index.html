@@ -1,156 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProFinEx – Accounting Price Calculator</title>
+  <meta charset="UTF-8">
+  <title>ProFinEx - Annual Accounting Calculator</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      background-color: #f5f7f9;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      text-align: center;
       padding: 20px;
     }
-
-    .container {
-      background-color: #fff;
-      max-width: 600px;
-      width: 100%;
-      padding: 30px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-
-    .logo {
-      max-width: 200px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      text-align: center;
+    header {
       margin-bottom: 30px;
-      font-size: 1.8em;
-      color: #2d5c47;
     }
-
-    label {
-      margin-top: 15px;
-      font-weight: 500;
+    img {
+      height: 80px;
     }
-
-    select, input[type="checkbox"] {
-      margin-top: 5px;
-      padding: 8px;
+    h1 {
+      color: #2c5f4d;
+    }
+    .calculator {
+      background-color: white;
+      padding: 25px;
+      max-width: 500px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="number"] {
+      padding: 10px;
+      margin: 10px 0;
       width: 100%;
       box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    .checkbox-group label {
-      display: flex;
-      align-items: center;
-      margin-top: 10px;
-    }
-
-    .checkbox-group input {
-      width: auto;
-      margin-right: 10px;
-    }
-
-    button {
-      margin-top: 25px;
-      width: 100%;
-      padding: 12px;
-      background-color: #2d5c47;
-      color: white;
       font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #2c5f4d;
+      color: white;
       border: none;
-      border-radius: 6px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      border-radius: 5px;
     }
-
-    button:hover {
-      background-color: #24483a;
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #2c5f4d;
     }
-
-    #result {
-      margin-top: 25px;
-      font-size: 1.3em;
-      font-weight: bold;
-      text-align: center;
-      color: #1a3c2e;
+    .note {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-  <img src="profinex-logo.png" alt="ProFinEx logo" class="logo" />
+  <header>
+    <img src="profinex-logo.png" alt="ProFinEx logo">
+    <h1>Annual Accounting Cost Calculator</h1>
+  </header>
 
-  <div class="container">
-    <h1>Annual Price Calculator</h1>
+  <div class="calculator">
+    <p>Enter your estimated annual document count:</p>
+    <input type="number" id="incomeInvoices" placeholder="Number of sales invoices (per year)">
+    <input type="number" id="expenseInvoices" placeholder="Number of purchase invoices (per year)">
+    <label>
+      <input type="checkbox" id="isVatRegistered">
+      I'm registered for VAT
+    </label><br><br>
+    <button onclick="calculate()">Calculate Annual Cost</button>
 
-    <label for="entries">Number of monthly entries:</label>
-    <select id="entries">
-      <option value="1">1–25</option>
-      <option value="2">26–50</option>
-      <option value="3">51–75</option>
-      <option value="4">76–100</option>
-      <option value="5">101+</option>
-    </select>
-
-    <label for="turnover">Monthly total costs + revenues:</label>
-    <select id="turnover">
-      <option value="1">£1–2,500</option>
-      <option value="2">£2,501–5,000</option>
-      <option value="3">£5,001–7,500</option>
-      <option value="4">£7,501–10,000</option>
-      <option value="5">£10,001+</option>
-    </select>
-
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="vat"> VAT registration</label>
-      <label><input type="checkbox" id="cis"> CIS settlement</label>
-      <label><input type="checkbox" id="partnership"> Partnership</label>
+    <div class="result" id="result"></div>
+    <div class="note">
+      <strong>Note:</strong> If your annual turnover does not exceed the VAT registration threshold, you may not be required to register for VAT. <br>This threshold changes periodically, so please verify the current limit with HMRC or your accountant.
     </div>
-
-    <button onclick="calculate()">Calculate annual price</button>
-
-    <div id="result"></div>
   </div>
 
   <script>
     function calculate() {
-      const entries = parseInt(document.getElementById('entries').value);
-      const turnover = parseInt(document.getElementById('turnover').value);
-      const vat = document.getElementById('vat').checked;
-      const cis = document.getElementById('cis').checked;
-      const partnership = document.getElementById('partnership').checked;
+      const income = parseInt(document.getElementById('incomeInvoices').value) || 0;
+      const expense = parseInt(document.getElementById('expenseInvoices').value) || 0;
+      const isVat = document.getElementById('isVatRegistered').checked;
 
-      const priceTable = [
-        [300, 350, 400, 450, 500],
-        [350, 400, 450, 500, 550],
-        [400, 450, 500, 550, 600],
-        [450, 500, 550, 600, 650],
-        [500, 550, 600, 650, 700]
-      ];
+      const totalDocs = income + expense;
 
-      let price = priceTable[entries - 1][turnover - 1];
+      let monthlyCost = 0;
 
-      if (vat) price += 100;
-      if (cis) price += 100;
-      if (partnership) price += 150;
+      if (totalDocs <= 20) monthlyCost = 50;
+      else if (totalDocs <= 40) monthlyCost = 75;
+      else if (totalDocs <= 60) monthlyCost = 100;
+      else if (totalDocs <= 100) monthlyCost = 130;
+      else monthlyCost = 160;
 
-      if (price < 300) price = 300;
+      if (isVat) monthlyCost += 20;
 
-      document.getElementById('result').innerText = `Annual service price: £${price.toFixed(2)}`;
+      const annualCost = monthlyCost * 12;
+
+      document.getElementById('result').innerText =
+        `Estimated annual accounting cost: £${annualCost.toFixed(2)}`;
     }
   </script>
+
 </body>
 </html>
