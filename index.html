@@ -1,107 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ProFinEx - Annual Accounting Calculator</title>
+  <meta charset="UTF-8" />
+  <title>ProFinEx – Annual Accounting Price Calculator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
-      text-align: center;
       padding: 20px;
-    }
-    header {
-      margin-bottom: 30px;
-    }
-    img {
-      height: 80px;
-    }
-    h1 {
-      color: #2c5f4d;
-    }
-    .calculator {
-      background-color: white;
-      padding: 25px;
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input[type="number"] {
-      padding: 10px;
+    label, select, input {
+      display: block;
       margin: 10px 0;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
     }
     button {
-      padding: 10px 20px;
-      background-color: #2c5f4d;
-      color: white;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    .result {
       margin-top: 20px;
-      font-size: 18px;
-      color: #2c5f4d;
     }
-    .note {
+    #result {
       margin-top: 20px;
-      font-size: 14px;
-      color: #555;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    #vat-note {
+      margin-top: 10px;
+      color: #666;
+      font-style: italic;
+    }
+    img.logo {
+      max-height: 80px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
+  <img src="profinex-logo.png" alt="ProFinEx Logo" class="logo" />
 
-  <header>
-    <img src="profinex-logo.png" alt="ProFinEx logo">
-    <h1>Annual Accounting Cost Calculator</h1>
-  </header>
+  <h2>Annual Price Calculator – Accounting Service</h2>
 
-  <div class="calculator">
-    <p>Enter your estimated annual document count:</p>
-    <input type="number" id="incomeInvoices" placeholder="Number of sales invoices (per year)">
-    <input type="number" id="expenseInvoices" placeholder="Number of purchase invoices (per year)">
-    <label>
-      <input type="checkbox" id="isVatRegistered">
-      I'm registered for VAT
-    </label><br><br>
-    <button onclick="calculate()">Calculate Annual Cost</button>
+  <label for="entries">Number of bookkeeping entries per year:</label>
+  <select id="entries">
+    <option value="1">1–300</option>
+    <option value="2">301–600</option>
+    <option value="3">601–900</option>
+    <option value="4">901–1200</option>
+    <option value="5">1201+</option>
+  </select>
 
-    <div class="result" id="result"></div>
-    <div class="note">
-      <strong>Note:</strong> If your annual turnover does not exceed the VAT registration threshold, you may not be required to register for VAT. <br>This threshold changes periodically, so please verify the current limit with HMRC or your accountant.
-    </div>
-  </div>
+  <label for="turnover">Total turnover + expenses per year:</label>
+  <select id="turnover">
+    <option value="1">£1–25,000</option>
+    <option value="2">£25,001–50,000</option>
+    <option value="3">£50,001–75,000</option>
+    <option value="4">£75,001–100,000</option>
+    <option value="5">£100,001+</option>
+  </select>
+
+  <label><input type="checkbox" id="vat"> VAT Registration</label>
+  <div id="vat-note"></div>
+
+  <label><input type="checkbox" id="cis"> CIS Return</label>
+  <label><input type="checkbox" id="partnership"> Partnership</label>
+
+  <button onclick="calculate()">Calculate Annual Price</button>
+
+  <div id="result"></div>
 
   <script>
     function calculate() {
-      const income = parseInt(document.getElementById('incomeInvoices').value) || 0;
-      const expense = parseInt(document.getElementById('expenseInvoices').value) || 0;
-      const isVat = document.getElementById('isVatRegistered').checked;
+      const entries = parseInt(document.getElementById('entries').value);
+      const turnover = parseInt(document.getElementById('turnover').value);
+      const vatChecked = document.getElementById('vat').checked;
+      const cis = document.getElementById('cis').checked;
+      const partnership = document.getElementById('partnership').checked;
+      const vatNote = document.getElementById('vat-note');
 
-      const totalDocs = income + expense;
+      const priceTable = [
+        [300, 350, 400, 450, 500],
+        [350, 400, 450, 500, 550],
+        [400, 450, 500, 550, 600],
+        [450, 500, 550, 600, 650],
+        [500, 550, 600, 650, 700]
+      ];
 
-      let monthlyCost = 0;
+      let price = priceTable[entries - 1][turnover - 1];
 
-      if (totalDocs <= 20) monthlyCost = 50;
-      else if (totalDocs <= 40) monthlyCost = 75;
-      else if (totalDocs <= 60) monthlyCost = 100;
-      else if (totalDocs <= 100) monthlyCost = 130;
-      else monthlyCost = 160;
+      // Show VAT note if turnover suggests VAT registration is optional
+      if (vatChecked && turnover < 4) {
+        vatNote.innerText = "Note: Based on your turnover, VAT registration is likely not mandatory. Please check current HMRC thresholds.";
+      } else {
+        vatNote.innerText = "";
+      }
 
-      if (isVat) monthlyCost += 20;
+      // Add-ons
+      if (vatChecked) price += 100;
+      if (cis) price += 100;
+      if (partnership) price += 150;
 
-      const annualCost = monthlyCost * 12;
+      if (price < 300) price = 300;
 
-      document.getElementById('result').innerText =
-        `Estimated annual accounting cost: £${annualCost.toFixed(2)}`;
+      document.getElementById('result').innerText = `Estimated annual price: £${price}`;
     }
   </script>
-
 </body>
 </html>
