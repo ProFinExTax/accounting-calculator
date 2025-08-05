@@ -113,7 +113,7 @@
       <option value="5">1201+</option>
     </select>
 
-    <label for="turnover">Annual total costs + revenues:</label>
+    <label for="turnover">Annual total revenues + costs:</label>
     <select id="turnover">
       <option value="1">£1–25,000</option>
       <option value="2">£25,001–50,000</option>
@@ -123,9 +123,10 @@
     </select>
 
     <div class="checkbox-group">
-      <label><input type="checkbox" id="vat"> VAT registration</label>
-      <label><input type="checkbox" id="cis"> CIS settlement</label>
       <label><input type="checkbox" id="partnership"> Partnership</label>
+      <label><input type="checkbox" id="vat"> VAT registration</label>
+      <label><input type="checkbox" id="cis"> CIS</label>
+      
     </div>
 
     <div id="vat-note"></div>
@@ -145,19 +146,19 @@
       const vatNote = document.getElementById('vat-note');
 
       const priceTable = [
-        [300, 350, 400, 450, 500],
-        [350, 400, 450, 500, 550],
-        [400, 450, 500, 550, 600],
-        [450, 500, 550, 600, 650],
-        [500, 550, 600, 650, 700]
+        [300, 375, 450, 525, 600],
+        [375, 450, 525, 600, 675],
+        [450, 525, 600, 675, 750],
+        [525, 600, 675, 750, 825],
+        [600, 675, 750, 825, 900]
       ];
 
       let price = priceTable[entries - 1][turnover - 1];
 
-      if (vat) price += 100;
+	  if (partnership) price += 50;
+      if (vat) price += 150;
       if (cis) price += 100;
-      if (partnership) price += 150;
-
+      
       if (price < 300) price = 300;
 
       if (vat && turnover <= 3) {
