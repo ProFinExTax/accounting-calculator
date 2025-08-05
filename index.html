@@ -2,75 +2,144 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ProFinEx – Annual Accounting Price Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProFinEx – Accounting Price Calculator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f5f7f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
+    }
+
+    .container {
+      background-color: #fff;
       max-width: 600px;
-      margin: auto;
+      width: 100%;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      margin-top: 20px;
     }
-    label, select, input {
-      display: block;
-      margin: 10px 0;
+
+    .logo {
+      max-width: 200px;
+      margin-bottom: 20px;
     }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8em;
+      color: #2d5c47;
+    }
+
+    label {
+      margin-top: 15px;
+      font-weight: 500;
+    }
+
+    select, input[type="checkbox"] {
+      margin-top: 5px;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .checkbox-group input {
+      width: auto;
+      margin-right: 10px;
+    }
+
     button {
-      margin-top: 20px;
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #2d5c47;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
+
+    button:hover {
+      background-color: #24483a;
+    }
+
     #result {
-      margin-top: 20px;
+      margin-top: 25px;
+      font-size: 1.3em;
       font-weight: bold;
-      font-size: 1.2em;
+      text-align: center;
+      color: #1a3c2e;
     }
+
     #vat-note {
       margin-top: 10px;
+      font-size: 0.9em;
       color: #666;
       font-style: italic;
-    }
-    img.logo {
-      max-height: 80px;
-      margin-bottom: 20px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <img src="profinex-logo.png" alt="ProFinEx Logo" class="logo" />
 
-  <h2>Annual Price Calculator – Accounting Service</h2>
+  <img src="profinex-logo.png" alt="ProFinEx logo" class="logo" />
 
-  <label for="entries">Number of bookkeeping entries per year:</label>
-  <select id="entries">
-    <option value="1">1–300</option>
-    <option value="2">301–600</option>
-    <option value="3">601–900</option>
-    <option value="4">901–1200</option>
-    <option value="5">1201+</option>
-  </select>
+  <div class="container">
+    <h1>Annual Price Calculator</h1>
 
-  <label for="turnover">Total turnover + expenses per year:</label>
-  <select id="turnover">
-    <option value="1">£1–25,000</option>
-    <option value="2">£25,001–50,000</option>
-    <option value="3">£50,001–75,000</option>
-    <option value="4">£75,001–100,000</option>
-    <option value="5">£100,001+</option>
-  </select>
+    <label for="entries">Number of entries per year:</label>
+    <select id="entries">
+      <option value="1">1–300</option>
+      <option value="2">301–600</option>
+      <option value="3">601–900</option>
+      <option value="4">901–1200</option>
+      <option value="5">1201+</option>
+    </select>
 
-  <label><input type="checkbox" id="vat"> VAT Registration</label>
-  <div id="vat-note"></div>
+    <label for="turnover">Annual total costs + revenues:</label>
+    <select id="turnover">
+      <option value="1">£1–25,000</option>
+      <option value="2">£25,001–50,000</option>
+      <option value="3">£50,001–75,000</option>
+      <option value="4">£75,001–100,000</option>
+      <option value="5">£100,001+</option>
+    </select>
 
-  <label><input type="checkbox" id="cis"> CIS Return</label>
-  <label><input type="checkbox" id="partnership"> Partnership</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="vat"> VAT registration</label>
+      <label><input type="checkbox" id="cis"> CIS settlement</label>
+      <label><input type="checkbox" id="partnership"> Partnership</label>
+    </div>
 
-  <button onclick="calculate()">Calculate Annual Price</button>
+    <div id="vat-note"></div>
 
-  <div id="result"></div>
+    <button onclick="calculate()">Calculate annual price</button>
+
+    <div id="result"></div>
+  </div>
 
   <script>
     function calculate() {
       const entries = parseInt(document.getElementById('entries').value);
       const turnover = parseInt(document.getElementById('turnover').value);
-      const vatChecked = document.getElementById('vat').checked;
+      const vat = document.getElementById('vat').checked;
       const cis = document.getElementById('cis').checked;
       const partnership = document.getElementById('partnership').checked;
       const vatNote = document.getElementById('vat-note');
@@ -85,21 +154,19 @@
 
       let price = priceTable[entries - 1][turnover - 1];
 
-      // Show VAT note if turnover suggests VAT registration is optional
-      if (vatChecked && turnover < 4) {
-        vatNote.innerText = "Note: Based on your turnover, VAT registration is likely not mandatory. Please check current HMRC thresholds.";
-      } else {
-        vatNote.innerText = "";
-      }
-
-      // Add-ons
-      if (vatChecked) price += 100;
+      if (vat) price += 100;
       if (cis) price += 100;
       if (partnership) price += 150;
 
       if (price < 300) price = 300;
 
-      document.getElementById('result').innerText = `Estimated annual price: £${price}`;
+      if (vat && turnover <= 2) {
+        vatNote.innerText = "Note: VAT registration is not mandatory unless your turnover exceeds the government threshold.";
+      } else {
+        vatNote.innerText = "";
+      }
+
+      document.getElementById('result').innerText = `Annual service price: £${price.toFixed(2)}`;
     }
   </script>
 </body>
