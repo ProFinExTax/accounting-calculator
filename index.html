@@ -2,56 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Accounting Office Price Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProFinEx – Accounting Price Calculator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f5f7f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
-      max-width: 500px;
-      margin: auto;
     }
-    label, select, input {
-      display: block;
-      margin: 10px 0;
+
+    .container {
+      background-color: #fff;
+      max-width: 600px;
+      width: 100%;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      margin-top: 20px;
     }
+
+    .logo {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.8em;
+      color: #2d5c47;
+    }
+
+    label {
+      margin-top: 15px;
+      font-weight: 500;
+    }
+
+    select, input[type="checkbox"] {
+      margin-top: 5px;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .checkbox-group input {
+      width: auto;
+      margin-right: 10px;
+    }
+
     button {
-      margin-top: 20px;
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #2d5c47;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
+
+    button:hover {
+      background-color: #24483a;
+    }
+
     #result {
-      margin-top: 20px;
+      margin-top: 25px;
+      font-size: 1.3em;
       font-weight: bold;
-      font-size: 1.2em;
+      text-align: center;
+      color: #1a3c2e;
     }
   </style>
 </head>
 <body>
-  <h2>Annual Price Calculator (Accounting Office)</h2>
 
-  <label for="entries">Number of monthly entries:</label>
-  <select id="entries">
-    <option value="1">1–25</option>
-    <option value="2">26–50</option>
-    <option value="3">51–75</option>
-    <option value="4">76–100</option>
-    <option value="5">101+</option>
-  </select>
+  <img src="profinex-logo.png" alt="ProFinEx logo" class="logo" />
 
-  <label for="turnover">Monthly total costs + revenues:</label>
-  <select id="turnover">
-    <option value="1">£0–2,500</option>
-    <option value="2">£2,501–5,000</option>
-    <option value="3">£5,001–7,500</option>
-    <option value="4">£7,501–10,000</option>
-    <option value="5">£10,001+</option>
-  </select>
+  <div class="container">
+    <h1>Annual Price Calculator</h1>
 
-  <label><input type="checkbox" id="vat" /> VAT registration</label>
-  <label><input type="checkbox" id="cis" /> CIS settlement</label>
-  <label><input type="checkbox" id="partnership" /> Partnership</label>
+    <label for="entries">Number of monthly entries:</label>
+    <select id="entries">
+      <option value="1">1–25</option>
+      <option value="2">26–50</option>
+      <option value="3">51–75</option>
+      <option value="4">76–100</option>
+      <option value="5">101+</option>
+    </select>
 
-  <button onclick="calculate()">Calculate annual price</button>
+    <label for="turnover">Monthly total costs + revenues:</label>
+    <select id="turnover">
+      <option value="1">£0–2,500</option>
+      <option value="2">£2,501–5,000</option>
+      <option value="3">£5,001–7,500</option>
+      <option value="4">£7,501–10,000</option>
+      <option value="5">£10,001+</option>
+    </select>
 
-  <div id="result"></div>
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="vat"> VAT registration</label>
+      <label><input type="checkbox" id="cis"> CIS settlement</label>
+      <label><input type="checkbox" id="partnership"> Partnership</label>
+    </div>
+
+    <button onclick="calculate()">Calculate annual price</button>
+
+    <div id="result"></div>
+  </div>
 
   <script>
     function calculate() {
@@ -71,7 +143,6 @@
 
       let price = priceTable[entries - 1][turnover - 1];
 
-      // Add-ons
       if (vat) price += 100;
       if (cis) price += 100;
       if (partnership) price += 150;
