@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Accounting Office Price Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+    label, select, input {
+      display: block;
+      margin: 10px 0;
+    }
+    button {
+      margin-top: 20px;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h2>Annual Price Calculator (Accounting Office)</h2>
+
+  <label for="entries">Number of monthly entries:</label>
+  <select id="entries">
+    <option value="1">1–25</option>
+    <option value="2">26–50</option>
+    <option value="3">51–75</option>
+    <option value="4">76–100</option>
+    <option value="5">101+</option>
+  </select>
+
+  <label for="turnover">Monthly total costs + revenues:</label>
+  <select id="turnover">
+    <option value="1">£0–2,500</option>
+    <option value="2">£2,501–5,000</option>
+    <option value="3">£5,001–7,500</option>
+    <option value="4">£7,501–10,000</option>
+    <option value="5">£10,001+</option>
+  </select>
+
+  <label><input type="checkbox" id="vat" /> VAT registration</label>
+  <label><input type="checkbox" id="cis" /> CIS settlement</label>
+  <label><input type="checkbox" id="partnership" /> Partnership</label>
+
+  <button onclick="calculate()">Calculate annual price</button>
+
+  <div id="result"></div>
+
+  <script>
+    function calculate() {
+      const entries = parseInt(document.getElementById('entries').value);
+      const turnover = parseInt(document.getElementById('turnover').value);
+      const vat = document.getElementById('vat').checked;
+      const cis = document.getElementById('cis').checked;
+      const partnership = document.getElementById('partnership').checked;
+
+      const priceTable = [
+        [300, 350, 400, 450, 500],
+        [350, 400, 450, 500, 550],
+        [400, 450, 500, 550, 600],
+        [450, 500, 550, 600, 650],
+        [500, 550, 600, 650, 700]
+      ];
+
+      let price = priceTable[entries - 1][turnover - 1];
+
+      // Add-ons
+      if (vat) price += 100;
+      if (cis) price += 100;
+      if (partnership) price += 150;
+
+      if (price < 300) price = 300;
+
+      document.getElementById('result').innerText = `Annual service price: £${price.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
+Add accounting calculator
