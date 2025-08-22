@@ -15,7 +15,6 @@
       align-items: center;
       padding: 20px;
     }
-
     .container {
       background-color: #fff;
       max-width: 600px;
@@ -25,25 +24,21 @@
       border-radius: 12px;
       margin-top: 20px;
     }
-
     .logo {
       max-width: 200px;
       margin-bottom: 20px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
       font-size: 1.8em;
       color: #2d5c47;
     }
-
     label {
       margin-top: 15px;
       font-weight: 500;
     }
-
-    select, input[type="checkbox"] {
+    select, input[type="number"], input[type="checkbox"] {
       margin-top: 5px;
       padding: 8px;
       width: 100%;
@@ -51,18 +46,15 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     .checkbox-group label {
       display: flex;
       align-items: center;
       margin-top: 10px;
     }
-
     .checkbox-group input {
       width: auto;
       margin-right: 10px;
     }
-
     button {
       margin-top: 25px;
       width: 100%;
@@ -75,11 +67,9 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
     button:hover {
       background-color: #24483a;
     }
-
     #result {
       margin-top: 25px;
       font-size: 1.3em;
@@ -87,7 +77,6 @@
       text-align: center;
       color: #1a3c2e;
     }
-
     #vat-note {
       margin-top: 10px;
       font-size: 0.9em;
@@ -95,17 +84,20 @@
       font-style: italic;
       text-align: center;
     }
+    #custom-turnover-container {
+      display: none;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
-
   <img src="profinex-logo.png" alt="ProFinEx logo" class="logo" />
 
   <div class="container">
     <h1>Annual Price Calculator</h1>
 
     <label for="entries">Number of entries per year:</label>
-    <select id="entries">
+    <select id="entries" onchange="checkCustomTurnover()">
       <option value="1">1–300</option>
       <option value="2">301–600</option>
       <option value="3">601–900</option>
@@ -114,7 +106,7 @@
     </select>
 
     <label for="turnover">Annual total revenues + costs:</label>
-    <select id="turnover">
+    <select id="turnover" onchange="checkCustomTurnover()">
       <option value="1">£1–25,000</option>
       <option value="2">£25,001–50,000</option>
       <option value="3">£50,001–75,000</option>
@@ -122,11 +114,15 @@
       <option value="5">£100,001+</option>
     </select>
 
+    <div id="custom-turnover-container">
+      <label for="customTurnover">Please enter exact total revenues + costs (£):</label>
+      <input type="number" id="customTurnover" placeholder="e.g. 125000">
+    </div>
+
     <div class="checkbox-group">
       <label><input type="checkbox" id="partnership"> Partnership</label>
       <label><input type="checkbox" id="vat"> VAT registration</label>
       <label><input type="checkbox" id="cis"> CIS</label>
-      
     </div>
 
     <div id="vat-note"></div>
@@ -137,6 +133,18 @@
   </div>
 
   <script>
+    function checkCustomTurnover() {
+      const entries = parseInt(document.getElementById('entries').value);
+      const turnover = parseInt(document.getElementById('turnover').value);
+      const container = document.getElementById('custom-turnover-container');
+
+      if (entries === 5 && turnover === 5) {
+        container.style.display = 'block';
+      } else {
+        container.style.display = 'none';
+      }
+    }
+
     function calculate() {
       const entries = parseInt(document.getElementById('entries').value);
       const turnover = parseInt(document.getElementById('turnover').value);
@@ -144,6 +152,7 @@
       const cis = document.getElementById('cis').checked;
       const partnership = document.getElementById('partnership').checked;
       const vatNote = document.getElementById('vat-note');
+      const customTurnover = parseFloat(document.getElementById('customTurnover').value);
 
       const priceTable = [
         [300, 350, 400, 450, 500],
@@ -153,13 +162,26 @@
         [600, 650, 700, 800, 850]
       ];
 
-      let price = priceTable[entries - 1][turnover - 1];
+      let price;
 
-	  if (partnership) price += 50;
-      if (vat) price += 150;
-      if (cis) price += 100;
-      
-      if (price < 300) price = 300;
+      if (entries === 5 && turnover === 5) {
+        if (isNaN(customTurnover) || customTurnover <= 0) {
+          alert("Please enter the exact total revenues + costs.");
+          return;
+        }
+        // Percentage-based calculation
+        let percent = 0.0085; // base 0.85%
+        if (partnership) percent += 0.001; // +0.1%
+        if (vat) percent += 0.001; // +0.1%
+        price = Math.ceil((customTurnover * percent) / 50) * 50; // round up to nearest £50
+      } else {
+        // Table-based calculation
+        price = priceTable[entries - 1][turnover - 1];
+        if (partnership) price += 50;
+        if (vat) price += 150;
+        if (cis) price += 100;
+        if (price < 300) price = 300;
+      }
 
       if (vat && turnover <= 3) {
         vatNote.innerText = "Note: VAT registration is not mandatory unless your turnover exceeds the government threshold.";
